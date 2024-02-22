@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "fjAevJqZIFwFFzDjOnQ672bC4teh91Hr21fCgKnKKD4=",
+  "Source": "PlugAndPlay.WebAPI",
+  "BasePath": "_content/PlugAndPlay.WebAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
