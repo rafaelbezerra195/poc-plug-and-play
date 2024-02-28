@@ -1,0 +1,10 @@
+USE PlugAndPlay
+
+CREATE TABLE [dbo].[BMA_FIELD_SCHEMA_TYPES] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [Name]       NVARCHAR (50)            NOT NULL,
+    CONSTRAINT [PK_BMA_FIELD_SCHEMA_TYPES] PRIMARY KEY CLUSTERED ([Id] ASC),
+);
+
+
+GO
