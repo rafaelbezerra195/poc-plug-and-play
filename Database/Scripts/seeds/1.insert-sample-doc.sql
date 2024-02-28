@@ -33,7 +33,7 @@ BEGIN TRANSACTION;
     SELECT @request_schema_id = id from dbo.BMA_REQUEST_SCHEMA where Type = @request_type and Origin = @request_origin;
 
     -- INSERT TAB_SCHEMA
-    INSERT INTO dbo.BMA_TAB_SCHEMA(RequestSchemaId, Name, Display, Order, CreateDate, UpdateDate) 
+    INSERT INTO dbo.BMA_TAB_SCHEMA(RequestSchemaId, Name, Display, [Order], CreateDate, UpdateDate) 
     values (@request_schema_id, 'timeline', 'Timeline', true, 1, GETDATE(), GETDATE()),
            (@request_schema_id, 'itens', "Itens", true, 2, GETDATE(), GETDATE());
 
@@ -44,7 +44,7 @@ BEGIN TRANSACTION;
     SELECT @tab_schema_itens_id = id from dbo.BMA_TAB_SCHEMA where Name = 'itens'
 
     -- INSERT FIELDS_SCHEMA
-    INSERT INTO dbo.BMA_FIELD_SCHEMA(RequestSchemaId, Name, TabSchemaId, FieldSchemaTypesId, Required, Display, Visible, Order, CreateDate, UpdateDate)
+    INSERT INTO dbo.BMA_FIELD_SCHEMA(RequestSchemaId, Name, TabSchemaId, FieldSchemaTypesId, Required, Display, Visible, [Order], CreateDate, UpdateDate)
     values (@request_schema_id, 'type', null,  @type_string, true, "Type", true, 1, GETDATE(), GETDATE()),
            (@request_schema_id, 'value', null,  @type_currency, true, "Value", true, 2, GETDATE(), GETDATE()),
            (@request_schema_id, 'requester', null,  @type_string, true, "Requester", true, 3, GETDATE(), GETDATE()),
