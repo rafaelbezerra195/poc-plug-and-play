@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PlugAndPlay.WebAPI.Controllers;
@@ -14,8 +15,8 @@ public class RequestController : ControllerBase
     }
     
     [HttpPost(Name = "Request")]
-    public IActionResult Post()
+    public async Task<IActionResult> Post([FromBody] JsonObject body)
     {
-        return Ok();
+        return Ok(body["DocumentType"]);
     }
 }
