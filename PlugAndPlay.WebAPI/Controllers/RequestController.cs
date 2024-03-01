@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PlugAndPlay.WebAPI.Domain;
 
 namespace PlugAndPlay.WebAPI.Controllers;
 
@@ -22,8 +23,7 @@ public class RequestController : ControllerBase
     public async Task<IActionResult> Post([FromBody] JsonObject body)
     {
         var connection = _context.Database.GetDbConnection();
-        var results = connection.Query("SELECT * FROM BMA_APPROVAL_RULES");
-        
+        var results = connection.Query<ApprovalRules>("SELECT [Id],[Name] FROM [PlugAndPlay].[dbo].[BMA_APPROVAL_RULES]");
         return Ok(body["DocumentType"]);
     }
 }
