@@ -3,6 +3,7 @@ using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PlugAndPlay.WebAPI.Domain;
+using PlugAndPlay.WebAPI.Domain.Interfaces;
 
 namespace PlugAndPlay.WebAPI.Controllers;
 
@@ -11,19 +12,23 @@ namespace PlugAndPlay.WebAPI.Controllers;
 public class RequestController : ControllerBase
 {
     private readonly ILogger<RequestController> _logger;
-    private readonly DbContext _context;
-    
-    public RequestController(ILogger<RequestController> logger, DbContext context)
+    private readonly ISchemaService _schemaService;
+
+    public RequestController(ILogger<RequestController> logger, ISchemaService schemaService)
     {
         _logger = logger;
-        _context = context;
+        _schemaService = schemaService;
     }
     
     [HttpPost(Name = "Request")]
     public async Task<IActionResult> Post([FromBody] JsonObject body)
     {
-        var connection = _context.Database.GetDbConnection();
-        var results = connection.Query<ApprovalRules>("SELECT [Id],[Name] FROM [PlugAndPlay].[dbo].[BMA_APPROVAL_RULES]");
-        return Ok(body["DocumentType"]);
+        List<string> errors = _schemaService.RequestIsValid(body); 
+        if (errors.Any())
+        {
+            return BadRequest(errors);
+        }
+
+        return Accepted();
     }
 }
