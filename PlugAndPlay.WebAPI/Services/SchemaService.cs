@@ -59,7 +59,7 @@ public class SchemaService : ISchemaService
         
         foreach (var field in requiredFields)
         {
-            if (body[field.Name] == null)
+            if (RequestHelper.FindField(body, field.Name) == null) 
             {
                 errors.Add($"field {field.Name} is required");
             }
