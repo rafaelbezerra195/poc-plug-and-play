@@ -25,22 +25,13 @@ public static class RequestBuilder
         List<Field> fields = new List<Field>();
         foreach (var fieldSchema in fieldSchemas)
         {
-            string value = String.Empty;
-            try
-            {
-                value = RequestHelper.FindField(body, fieldSchema.Name).AsValue().ToString();
-                
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-            
+            var value = RequestHelper.FindField(body, fieldSchema.Name);
+            if (value == null) continue;
+                 
             fields.Add(new Field()
             {
                 FieldSchemaId = fieldSchema.Id,
-                Value = value,
+                Value = value.ToString(),
                 CreateDate = DateTime.Now,
                 UpdateDate = DateTime.Now
             });

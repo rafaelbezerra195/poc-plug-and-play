@@ -4,29 +4,21 @@ namespace PlugAndPlay.WebAPI.Services;
 
 public static class RequestHelper
 {
-    public static JsonNode FindField(JsonNode body, string fieldName)
+    public static JsonValue FindField(JsonObject body, string fieldName)
     {
         if (body[fieldName] != null)
         {
-            return body[fieldName]; 
+            return body[fieldName].AsValue(); 
         }
-
-        try
+        
+        List<KeyValuePair<string, JsonNode>> nodeFields = body.AsObject().Where(field => field.Value is JsonObject).ToList();
+        foreach (var field in nodeFields)
         {
-            List<KeyValuePair<string, JsonNode>> nodeFields = body.AsObject().Where(field => field.Value is JsonObject).ToList();
-            foreach (var field in nodeFields)
+            JsonValue result = FindField(field.Value.AsObject(), fieldName);
+            if (result != null)
             {
-                JsonNode result = FindField(field.Value, fieldName);
-                if (result != null)
-                {
-                    return result;
-                }
+                return result;
             }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
         }
         
         return null;
