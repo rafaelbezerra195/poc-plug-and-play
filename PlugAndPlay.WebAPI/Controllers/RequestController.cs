@@ -3,6 +3,7 @@ using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PlugAndPlay.WebAPI.Domain;
+using PlugAndPlay.WebAPI.Domain.Entities;
 using PlugAndPlay.WebAPI.Domain.Interfaces;
 
 namespace PlugAndPlay.WebAPI.Controllers;
@@ -23,12 +24,15 @@ public class RequestController : ControllerBase
     [HttpPost(Name = "Request")]
     public async Task<IActionResult> Post([FromBody] JsonObject body)
     {
-        List<string> errors = _schemaService.RequestIsValid(body); 
+        List<string> errors = await _schemaService.RequestIsValid(body); 
         if (errors.Any())
         {
             return BadRequest(errors);
         }
 
-        return Accepted();
+        Request request = await _schemaService.BuildRequest(body);
+        //await _schemaService.UpsertRequest(request);
+
+        return Accepted(request);
     }
 }

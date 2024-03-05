@@ -9,19 +9,19 @@ namespace PlugAndPlay.WebAPI.Services;
 
 public class SchemaService : ISchemaService
 {
-    private readonly DbContext _context;
+    private readonly ISchemaRepository _schemaRepository;
 
-    public SchemaService(DbContext context)
+    public SchemaService(ISchemaRepository schemaRepository)
     {
-        _context = context;
+        _schemaRepository = schemaRepository;
     }
-    public List<string> RequestIsValid(JsonObject body)
+    public async Task<List<string>> RequestIsValid(JsonObject body)
     {
         List<string> errors = new List<string>();
-        
+
         string type = body["type"]?.ToString();
         string origin = body["origin"]?.ToString();
-
+        
         try
         {
             if (type.IsNullOrEmpty() || origin.IsNullOrEmpty())
@@ -29,19 +29,19 @@ public class SchemaService : ISchemaService
                 return new List<string>() { "Fields type and origin is required." };
             }
 
-            RequestSchema request = getRequestSchema(type, origin);
+            RequestSchema request = await _schemaRepository.getRequestSchema(type, origin);
             if (request == null)
             {
                 return new List<string>() { $"request schema type {type} and origin {origin} not found" };
             }
         
-            List<FieldSchema> fields = getFieldsSchema(request.Id);
+            List<FieldSchema> fields = await _schemaRepository.getFieldSchemas(request.Id);
             if (fields.Count == 0)
             {
                 return new List<string>() { $"fields schema not found for request Schema type {type} and origin {origin}" };
             }
         
-            errors = checkRequiredFields(body, fields);
+            errors = CheckRequiredFields(body, fields);
         }
         catch (Exception e)
         {
@@ -51,7 +51,29 @@ public class SchemaService : ISchemaService
         return errors;
     }
 
-    private List<string> checkRequiredFields(JsonObject body, List<FieldSchema> fields)
+    public async Task<Request> BuildRequest(JsonObject body)
+    {   string type = body["type"]?.ToString();
+        string origin = body["origin"]?.ToString();
+
+        try
+        {
+            RequestSchema requestSchema = await _schemaRepository.getRequestSchema(type, origin);
+            List<FieldSchema> fieldSchemas = await _schemaRepository.getFieldSchemas(requestSchema.Id);
+
+            Request request = RequestBuilder.BuildRequest(requestSchema.Id, body);
+            request.Fields = RequestBuilder.BuildFields(fieldSchemas, body);
+
+            return request;
+        }
+        catch (Exception e)
+        {
+            throw e;
+        }
+
+        return new Request();
+    }
+
+    private List<string> CheckRequiredFields(JsonObject body, List<FieldSchema> fields)
     {
         List<string> errors = new List<string>();
         List<FieldSchema> requiredFields = fields.Where(field => field.Required).ToList();
@@ -67,23 +89,11 @@ public class SchemaService : ISchemaService
 
         return errors;
     }
-
-
-    private List<FieldSchema> getFieldsSchema(int requestId)
+    
+    public async Task UpsertRequest(Request request)
     {
-        var connection = _context.Database.GetDbConnection();
-        string sql = $"SELECT * FROM [PlugAndPlay].[dbo].[BMA_FIELD_SCHEMA] where RequestSchemaId = {requestId}";
-        var results = connection.Query<FieldSchema>(sql);
-
-        return results.ToList();
-    }
-
-    public RequestSchema getRequestSchema(string type, string origin)
-    {
-        var connection = _context.Database.GetDbConnection();
-        string sql = $"SELECT * FROM [PlugAndPlay].[dbo].[BMA_REQUEST_SCHEMA] " +
-                     $"WHERE type = '{type}' and origin = '{origin}'";
-        var results = connection.Query<RequestSchema>(sql);
-        return results.FirstOrDefault();
+        int requestId = await _schemaRepository.UpsertRequest(request);
+        request.Fields.ForEach(field => field.RequestId = requestId);
+        await _schemaRepository.UpsertFields(request.Fields);
     }
 }

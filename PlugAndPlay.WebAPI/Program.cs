@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PlugAndPlay.WebAPI.Domain.Interfaces;
+using PlugAndPlay.WebAPI.Repositories;
 using PlugAndPlay.WebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,7 @@ builder.Services.AddDbContext<DbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("PlugAndPlayContext")));
 
 builder.Services.AddScoped<ISchemaService, SchemaService>();
+builder.Services.AddScoped<ISchemaRepository, SchemaRepository>();
 
 var app = builder.Build();
 
