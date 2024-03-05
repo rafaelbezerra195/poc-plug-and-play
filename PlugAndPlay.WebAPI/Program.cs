@@ -16,6 +16,7 @@ builder.Services.AddDbContext<DbContext>(
 
 builder.Services.AddScoped<ISchemaService, SchemaService>();
 builder.Services.AddScoped<ISchemaRepository, SchemaRepository>();
+builder.Services.AddScoped<IRequestRepository, RequestRepository>();
 
 var app = builder.Build();
 

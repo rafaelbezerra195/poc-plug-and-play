@@ -9,12 +9,12 @@ public static class RequestBuilder
     {
         return new Request()
         {
-            Type = (string)body["type"],
+            Type = RequestHelper.FindField(body,"type").AsValue().ToString(),
             RequestSchemaId = requestSchemaId,
-            Requester = (string)body["requester"],
-            DocumentNumber = (string)body["documentnumber"],
-            Status = (string)body["status"],
-            Currency = (string)body["currency"],
+            Requester = RequestHelper.FindField(body,"requester").AsValue().ToString(),
+            DocumentNumber = RequestHelper.FindField(body,"documentNumber").AsValue().ToString(),
+            Status = RequestHelper.FindField(body,"status").AsValue().ToString(),
+            Currency = RequestHelper.FindField(body,"currency").AsValue().ToString(),
             CreateDate = DateTime.Now,
             UpdateDate = DateTime.Now
         };
@@ -25,10 +25,22 @@ public static class RequestBuilder
         List<Field> fields = new List<Field>();
         foreach (var fieldSchema in fieldSchemas)
         {
+            string value = String.Empty;
+            try
+            {
+                value = RequestHelper.FindField(body, fieldSchema.Name).AsValue().ToString();
+                
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
             fields.Add(new Field()
             {
                 FieldSchemaId = fieldSchema.Id,
-                Value = body[fieldSchema.Name]?.AsValue().ToString(),
+                Value = value,
                 CreateDate = DateTime.Now,
                 UpdateDate = DateTime.Now
             });

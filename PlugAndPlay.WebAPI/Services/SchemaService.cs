@@ -1,6 +1,4 @@
 using System.Text.Json.Nodes;
-using Dapper;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PlugAndPlay.WebAPI.Domain.Entities;
 using PlugAndPlay.WebAPI.Domain.Interfaces;
@@ -10,10 +8,12 @@ namespace PlugAndPlay.WebAPI.Services;
 public class SchemaService : ISchemaService
 {
     private readonly ISchemaRepository _schemaRepository;
+    private readonly IRequestRepository _requestRepository;
 
-    public SchemaService(ISchemaRepository schemaRepository)
+    public SchemaService(ISchemaRepository schemaRepository, IRequestRepository requestRepository)
     {
         _schemaRepository = schemaRepository;
+        _requestRepository = requestRepository;
     }
     public async Task<List<string>> RequestIsValid(JsonObject body)
     {
@@ -92,8 +92,8 @@ public class SchemaService : ISchemaService
     
     public async Task UpsertRequest(Request request)
     {
-        int requestId = await _schemaRepository.UpsertRequest(request);
+        int requestId = await _requestRepository.UpsertRequest(request);
         request.Fields.ForEach(field => field.RequestId = requestId);
-        await _schemaRepository.UpsertFields(request.Fields);
+        await _requestRepository.UpsertFields(request.Fields);
     }
 }

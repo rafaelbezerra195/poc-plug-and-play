@@ -31,14 +31,4 @@ public class SchemaRepository: ISchemaRepository
         var results = _connection.Query<RequestSchema>(sql);
         return results.FirstOrDefault();
     }
-
-    public async Task<int> UpsertRequest(Request request)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task UpsertFields(List<Field> fields)
-    {
-        throw new NotImplementedException();
-    }
 }
