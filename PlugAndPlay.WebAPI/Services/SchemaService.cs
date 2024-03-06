@@ -89,11 +89,11 @@ public class SchemaService : ISchemaService
 
         return errors;
     }
-    
-    public async Task UpsertRequest(Request request)
+
+    public void UpsertRequest(Request request)
     {
-        int requestId = await _requestRepository.UpsertRequest(request);
+        int requestId = _requestRepository.UpsertRequest(request);
         request.Fields.ForEach(field => field.RequestId = requestId);
-        await _requestRepository.UpsertFields(request.Fields);
+        _requestRepository.UpsertFields(request.Fields);
     }
 }

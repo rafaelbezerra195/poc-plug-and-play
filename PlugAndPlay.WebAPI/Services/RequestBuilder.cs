@@ -16,7 +16,8 @@ public static class RequestBuilder
             Status = RequestHelper.FindField(body,"status").AsValue().ToString(),
             Currency = RequestHelper.FindField(body,"currency").AsValue().ToString(),
             CreateDate = DateTime.Now,
-            UpdateDate = DateTime.Now
+            UpdateDate = DateTime.Now,
+            InternalUniqueKey = String.Empty
         };
     }
 

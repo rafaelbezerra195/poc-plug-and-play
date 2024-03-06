@@ -9,5 +9,5 @@ public interface ISchemaService
 {
     Task<List<string>> RequestIsValid(JsonObject body);
     Task<Request> BuildRequest(JsonObject body);
-    Task UpsertRequest(Request request);
+    void UpsertRequest(Request request);
 }

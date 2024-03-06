@@ -31,7 +31,7 @@ public class RequestController : ControllerBase
         }
 
         Request request = await _schemaService.BuildRequest(body);
-        //await _schemaService.UpsertRequest(request);
+        _schemaService.UpsertRequest(request);
 
         return Accepted(request);
     }
