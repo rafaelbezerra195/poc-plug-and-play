@@ -1,0 +1,3 @@
+Use PlugAndPlay
+
+INSERT INTO BMA_FIELD_SCHEMA_TYPES (Name) VALUES ('group')
