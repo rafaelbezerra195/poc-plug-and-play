@@ -2,7 +2,6 @@ USE PlugAndPlay
 
 CREATE TABLE [dbo].[BMA_REQUEST] (
     [Id]         INT            IDENTITY (1, 1) NOT NULL,
-    [Type]       NVARCHAR (20)            NOT NULL,
     [RequestSchemaId]   INT            NOT NULL,
     [Requester]       NVARCHAR (50)            NOT NULL,
     [DocumentNumber]       NVARCHAR (50)            NOT NULL,
