@@ -19,15 +19,13 @@ public class SchemaService : ISchemaService
     {
         List<string> errors = new List<string>();
 
-        string type = body["type"]?.ToString();
-        string origin = body["origin"]?.ToString();
+        string type = body["requestType"]?.ToString();
+        string origin = body["requestOrigin"]?.ToString();
         
         try
         {
-            if (type.IsNullOrEmpty() || origin.IsNullOrEmpty())
-            {
-                return new List<string>() { "Fields type and origin is required." };
-            }
+            errors = CheckStandardFields(body);
+            if (errors.Any()) return errors;
 
             RequestSchema request = await _schemaRepository.getRequestSchema(type, origin);
             if (request == null)
@@ -52,8 +50,9 @@ public class SchemaService : ISchemaService
     }
 
     public async Task<Request> BuildRequest(JsonObject body)
-    {   string type = body["type"]?.ToString();
-        string origin = body["origin"]?.ToString();
+    {   
+        string type = body["requestType"]?.ToString();
+        string origin = body["requestOrigin"]?.ToString();
 
         try
         {
@@ -69,8 +68,22 @@ public class SchemaService : ISchemaService
         {
             throw e;
         }
+    }
 
-        return new Request();
+    private List<string> CheckStandardFields(JsonObject body)
+    {
+        string[] standardFields = new string[] { "requestType", "requestKey", "requestOrigin", "status", "requester", "currency" };
+        List<string> errors = new List<string>();
+        
+        foreach (var fieldName in standardFields)
+        {
+            if (body[fieldName] == null)
+            {
+                errors.Add($"field {fieldName} is required");
+            }
+        }
+
+        return errors;
     }
 
     private List<string> CheckRequiredFields(JsonObject body, List<FieldSchema> fields)

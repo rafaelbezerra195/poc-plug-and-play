@@ -9,10 +9,10 @@ public static class RequestBuilder
     {
         return new Request()
         {
-            Type = RequestHelper.FindField(body,"type").AsValue().ToString(),
+            Type = RequestHelper.FindField(body,"requestType").AsValue().ToString(),
             RequestSchemaId = requestSchemaId,
             Requester = RequestHelper.FindField(body,"requester").AsValue().ToString(),
-            DocumentNumber = RequestHelper.FindField(body,"documentNumber").AsValue().ToString(),
+            DocumentNumber = RequestHelper.FindField(body,"requestKey").AsValue().ToString(),
             Status = RequestHelper.FindField(body,"status").AsValue().ToString(),
             Currency = RequestHelper.FindField(body,"currency").AsValue().ToString(),
             CreateDate = DateTime.Now,

@@ -1,8 +1,5 @@
 using System.Text.Json.Nodes;
-using Dapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PlugAndPlay.WebAPI.Domain;
 using PlugAndPlay.WebAPI.Domain.Entities;
 using PlugAndPlay.WebAPI.Domain.Interfaces;
 
@@ -31,7 +28,7 @@ public class RequestController : ControllerBase
         }
 
         Request request = await _schemaService.BuildRequest(body);
-        _schemaService.UpsertRequest(request);
+        //_schemaService.UpsertRequest(request);
 
         return Accepted(request);
     }
