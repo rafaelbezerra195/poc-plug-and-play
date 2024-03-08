@@ -15,28 +15,22 @@ public class SchemaService : ISchemaService
         _schemaRepository = schemaRepository;
         _requestRepository = requestRepository;
     }
-    public async Task<List<string>> RequestIsValid(JsonObject body)
+    public async Task<List<string>> RequestIsValid(RequestJson body)
     {
-        List<string> errors = new List<string>();
+        var errors = new List<string>();
 
-        string type = body["requestType"]?.ToString();
-        string origin = body["requestOrigin"]?.ToString();
-        
         try
         {
-            errors = CheckStandardFields(body);
-            if (errors.Any()) return errors;
-
-            RequestSchema request = await _schemaRepository.getRequestSchema(type, origin);
+            var request = await _schemaRepository.getRequestSchema(body.requestType, body.requestOrigin);
             if (request == null)
             {
-                return new List<string>() { $"request schema type {type} and origin {origin} not found" };
+                return new List<string>() { $"request schema type {body.requestType} and origin {body.requestOrigin} not found" };
             }
         
-            List<FieldSchema> fields = await _schemaRepository.getFieldSchemas(request.Id);
+            var fields = await _schemaRepository.getFieldSchemas(request.Id);
             if (fields.Count == 0)
             {
-                return new List<string>() { $"fields schema not found for request Schema type {type} and origin {origin}" };
+                return new List<string>() { $"fields schema not found for request Schema type {body.requestType} and origin {body.requestOrigin}" };
             }
         
             errors = CheckRequiredFields(body, fields);
@@ -51,15 +45,15 @@ public class SchemaService : ISchemaService
 
     public async Task<Request> BuildRequest(JsonObject body)
     {   
-        string type = body["requestType"]?.ToString();
-        string origin = body["requestOrigin"]?.ToString();
+        var type = body["requestType"]?.ToString();
+        var origin = body["requestOrigin"]?.ToString();
 
         try
         {
-            RequestSchema requestSchema = await _schemaRepository.getRequestSchema(type, origin);
-            List<FieldSchema> fieldSchemas = await _schemaRepository.getFieldSchemas(requestSchema.Id);
+            var requestSchema = await _schemaRepository.getRequestSchema(type, origin);
+            var fieldSchemas = await _schemaRepository.getFieldSchemas(requestSchema.Id);
 
-            Request request = RequestBuilder.BuildRequest(requestSchema.Id, body);
+            var request = RequestBuilder.BuildRequest(requestSchema.Id, body);
             request.Fields = RequestBuilder.BuildFields(fieldSchemas, body);
 
             return request;
@@ -70,31 +64,26 @@ public class SchemaService : ISchemaService
         }
     }
 
-    private List<string> CheckStandardFields(JsonObject body)
+    private List<string> CheckRequiredFields(RequestJson body, List<FieldSchema> fields)
     {
-        string[] standardFields = new string[] { "requestType", "requestKey", "requestOrigin", "status", "requester", "currency" };
-        List<string> errors = new List<string>();
-        
-        foreach (var fieldName in standardFields)
-        {
-            if (body[fieldName] == null)
-            {
-                errors.Add($"field {fieldName} is required");
-            }
-        }
-
-        return errors;
-    }
-
-    private List<string> CheckRequiredFields(JsonObject body, List<FieldSchema> fields)
-    {
-        List<string> errors = new List<string>();
-        List<FieldSchema> requiredFields = fields.Where(field => field.Required).ToList();
+        var errors = new List<string>();
+        var requiredFields = fields.Where(field => field.Required).ToList();
         if (requiredFields.Count == 0) return errors;
         
         foreach (var field in requiredFields)
         {
-            if (RequestHelper.FindField(body, field.Name) == null) 
+            var fieldGroupName = RequestHelper.GetFieldGroupName(field.Name);
+            var fieldName = RequestHelper.GetFieldName(field.Name);
+            var extraField = body.extraFields.FirstOrDefault(extraField => extraField.fieldGroupName == fieldGroupName);
+
+            if (extraField == null)
+            {
+                errors.Add($"field {field.Name} is required");
+                continue;
+            };
+
+            var result = RequestHelper.FindExtraFields(extraField, fieldName); 
+            if (extraField.fields.Count > result.Count)
             {
                 errors.Add($"field {field.Name} is required");
             }
@@ -105,7 +94,7 @@ public class SchemaService : ISchemaService
 
     public void UpsertRequest(Request request)
     {
-        int requestId = _requestRepository.UpsertRequest(request);
+        var requestId = _requestRepository.UpsertRequest(request);
         request.Fields.ForEach(field => field.RequestId = requestId);
         _requestRepository.UpsertFields(request.Fields);
     }

@@ -14,7 +14,6 @@ public static class RequestBuilder
             Requester = RequestHelper.FindField(body,"requester").AsValue().ToString(),
             DocumentNumber = RequestHelper.FindField(body,"requestKey").AsValue().ToString(),
             Status = RequestHelper.FindField(body,"status").AsValue().ToString(),
-            Currency = RequestHelper.FindField(body,"currency").AsValue().ToString(),
             CreateDate = DateTime.Now,
             UpdateDate = DateTime.Now,
             InternalUniqueKey = String.Empty

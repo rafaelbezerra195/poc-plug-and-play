@@ -8,7 +8,6 @@ public class Request
     public string Requester { get; set; }
     public string DocumentNumber { get; set; }
     public string Status { get; set; }
-    public string Currency { get; set; }
     public string InternalUniqueKey { get; set; }
     public DateTime CreateDate { get; set; } = DateTime.Now;
     public DateTime? UpdateDate { get; set; }

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "VkW1NFYHXmrK/YfTdb9dMB5j2wAAHVp/NOc3RSrxm/GbbEXwn0ukSC8k3ZfZyX4FVfuZWYjQb3ZwJw9UQtXJqw==",
+  "dgSpecHash": "AdTo4uVcd8ST/OXhSe53+2fFb1uHwap47leVLHOvRw/0Eamiu3uBLioG3rlGn85/wU55nEHzoqH8U/Ni4rxHiA==",
   "success": true,
   "projectFilePath": "C:\\Users\\rafaelbo\\repos\\samples\\poc-plug-and-play\\PlugAndPlay.WebAPI\\PlugAndPlay.WebAPI.csproj",
   "expectedPackageFiles": [
@@ -39,6 +39,7 @@
     "C:\\Users\\rafaelbo\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
     "C:\\Users\\rafaelbo\\.nuget\\packages\\microsoft.sqlserver.server\\1.0.0\\microsoft.sqlserver.server.1.0.0.nupkg.sha512",
     "C:\\Users\\rafaelbo\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
+    "C:\\Users\\rafaelbo\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\rafaelbo\\.nuget\\packages\\swashbuckle.aspnetcore\\6.5.0\\swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
     "C:\\Users\\rafaelbo\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.5.0\\swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
     "C:\\Users\\rafaelbo\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.5.0\\swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",

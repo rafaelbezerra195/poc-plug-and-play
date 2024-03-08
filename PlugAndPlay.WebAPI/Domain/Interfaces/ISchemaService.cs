@@ -7,7 +7,7 @@ namespace PlugAndPlay.WebAPI.Domain.Interfaces;
 
 public interface ISchemaService
 {
-    Task<List<string>> RequestIsValid(JsonObject body);
+    Task<List<string>> RequestIsValid(RequestJson body);
     Task<Request> BuildRequest(JsonObject body);
     void UpsertRequest(Request request);
 }

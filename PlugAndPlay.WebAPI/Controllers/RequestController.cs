@@ -19,7 +19,7 @@ public class RequestController : ControllerBase
     }
     
     [HttpPost(Name = "Request")]
-    public async Task<IActionResult> Post([FromBody] JsonObject body)
+    public async Task<IActionResult> Post([FromBody] RequestJson body)
     {
         List<string> errors = await _schemaService.RequestIsValid(body); 
         if (errors.Any())
@@ -27,9 +27,9 @@ public class RequestController : ControllerBase
             return BadRequest(errors);
         }
 
-        Request request = await _schemaService.BuildRequest(body);
+        // Request request = await _schemaService.BuildRequest(body);
         //_schemaService.UpsertRequest(request);
 
-        return Accepted(request);
+        return Accepted(new Request());
     }
 }
