@@ -22,7 +22,7 @@ public class RequestController : ControllerBase
     public async Task<IActionResult> Post([FromBody] RequestJson body)
     {
         List<string> errors = await _schemaService.RequestIsValid(body); 
-        if (errors.Any())
+        if (errors.Count != 0)
         {
             return BadRequest(errors);
         }

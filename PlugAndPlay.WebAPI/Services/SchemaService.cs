@@ -1,5 +1,4 @@
 using System.Text.Json.Nodes;
-using Microsoft.IdentityModel.Tokens;
 using PlugAndPlay.WebAPI.Domain.Entities;
 using PlugAndPlay.WebAPI.Domain.Interfaces;
 
@@ -74,16 +73,16 @@ public class SchemaService : ISchemaService
         {
             var fieldGroupName = RequestHelper.GetFieldGroupName(field.Name);
             var fieldName = RequestHelper.GetFieldName(field.Name);
-            var extraField = body.extraFields.FirstOrDefault(extraField => extraField.fieldGroupName == fieldGroupName);
+            var fieldGroup = body.fieldGroups.FirstOrDefault(fieldGroup => fieldGroup.fieldGroupName == fieldGroupName);
 
-            if (extraField == null)
+            if (fieldGroup == null)
             {
                 errors.Add($"field {field.Name} is required");
                 continue;
             };
 
-            var result = RequestHelper.FindExtraFields(extraField, fieldName); 
-            if (extraField.fields.Count > result.Count)
+            var result = RequestHelper.FindExtraFields(fieldGroup, fieldName); 
+            if (fieldGroup.records.Count > result.Count)
             {
                 errors.Add($"field {field.Name} is required");
             }

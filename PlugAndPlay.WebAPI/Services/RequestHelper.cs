@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using PlugAndPlay.WebAPI.Domain.Entities;
@@ -7,37 +6,18 @@ namespace PlugAndPlay.WebAPI.Services;
 
 public static class RequestHelper
 {
-    public static JsonValue FindField(JsonObject body, string fieldName)
-    {
-        if (body[fieldName] != null)
-        {
-            return body[fieldName].AsValue(); 
-        }
-        
-        List<KeyValuePair<string, JsonNode>> nodeFields = body.AsObject().Where(field => field.Value is JsonObject).ToList();
-        foreach (var field in nodeFields)
-        {
-            var result = FindField(field.Value.AsObject(), fieldName);
-            if (result != null)
-            {
-                return result;
-            }
-        }
-        
-        return null;
-    }
 
-    public static List<JsonElement> FindExtraFields(ExtraField extraField, string fieldSchemaName)
+    public static List<JsonElement> FindExtraFields(FieldGroup fieldGroup, string fieldSchemaName)
     {
         try
         {
-            var fields = extraField.fields.Where(field =>
+            var record = fieldGroup.records.Where(field =>
             {
                 field.TryGetProperty(fieldSchemaName, out JsonElement prop);
                 return prop.ValueKind != JsonValueKind.Undefined;
             }).Select(field => field.GetProperty(fieldSchemaName));
             
-            return fields.ToList();
+            return record.ToList();
         }
         catch (Exception e)
         {
