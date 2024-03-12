@@ -15,20 +15,20 @@ public class SchemaRepository: ISchemaRepository
         _connection = context.Database.GetDbConnection();
     }
     
-    public async Task<List<FieldSchema>> getFieldSchemas(int requestId)
+    public async Task<List<FieldSchema>> GetFieldSchemas(int requestId)
     {
         
         var sql = $"SELECT * FROM [PlugAndPlay].[dbo].[BMA_FIELD_SCHEMA] where RequestSchemaId = {requestId}";
-        var results = _connection.Query<FieldSchema>(sql);
+        var results = await _connection.QueryAsync<FieldSchema>(sql);
 
         return results.ToList();
     }
 
-    public async Task<RequestSchema> getRequestSchema(string type, string origin)
+    public async Task<RequestSchema> GetRequestSchema(string type, string origin)
     {
         var sql = $"SELECT * FROM [PlugAndPlay].[dbo].[BMA_REQUEST_SCHEMA] " +
                   $"WHERE type = '{type}' and origin = '{origin}'";
-        var results = _connection.Query<RequestSchema>(sql);
+        var results = await _connection.QueryAsync<RequestSchema>(sql);
         return results.FirstOrDefault();
     }
 }

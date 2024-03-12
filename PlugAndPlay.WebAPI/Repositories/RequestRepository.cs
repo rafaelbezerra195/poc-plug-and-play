@@ -34,11 +34,11 @@ public class RequestRepository: IRequestRepository
     private int InsertRequest(Request request)
     {
         const string sql = """
-                           INSERT INTO [PlugAndPlay].[dbo].[BMA_REQUEST] ( RequestSchemaId, Requester, DocumentNumber, Status, Currency, InternalUniqueKey, CreateDate, UpdateDate)
+                           INSERT INTO [PlugAndPlay].[dbo].[BMA_REQUEST] ( RequestSchemaId, Requester, DocumentNumber, Status, InternalUniqueKey, CreateDate, UpdateDate)
                            OUTPUT INSERTED.ID
-                           VALUES ( @RequestSchemaId, @Requester, @DocumentNumber, @Status, @Currency, @InternalUniqueKey, @CreateDate, @UpdateDate);
+                           VALUES ( @RequestSchemaId, @Requester, @DocumentNumber, @Status, @InternalUniqueKey, @CreateDate, @UpdateDate);
                            """;
-        var result = _connection.ExecuteScalar<int>(sql, request); 
+        request.Id = _connection.ExecuteScalar<int>(sql, request); 
         return request.Id;
     }
     
@@ -48,7 +48,6 @@ public class RequestRepository: IRequestRepository
                            UPDATE [PlugAndPlay].[dbo].[BMA_REQUEST]
                                                   SET Requester = @Requester,
                                                       Status = @Status,
-                                                      Currency = @Currency,
                                                       InternalUniqueKey = @InternalUniqueKey,
                                                       UpdateDate = @UpdateDate
                                                   WHERE Id = @Id
@@ -70,8 +69,20 @@ public class RequestRepository: IRequestRepository
 
     private void InsertFields(List<Field> fields)
     {
-        const string sql = @"INSERT INTO [PlugAndPlay].[dbo].[BMA_FIELDS] (RequestId, FieldSchemaId, Value, CreateDate, UpdateDate)
-                           VALUES (@RequestId, @FieldSchemaId, @Value, @CreateDate, @UpdateDate)";
-        _connection.Execute(sql, fields);
+        const string sql = """
+                           INSERT INTO [PlugAndPlay].[dbo].[BMA_FIELDS] (RequestId, FieldSchemaId, Value, CreateDate, UpdateDate, Parent)
+                           OUTPUT INSERTED.ID
+                           VALUES (@RequestId, @FieldSchemaId, @Value, @CreateDate, @UpdateDate, @Parent)
+                           """;
+
+        foreach (var field in fields)
+        {
+            field.Id = _connection.ExecuteScalar<int>(sql, field);
+
+            if (field.Children == null) continue;
+    
+            field.Children.ToList().ForEach(fieldChild => fieldChild.Parent = field.Id);
+            _connection.Execute(sql, field.Children);
+        }            
     }
 }

@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using PlugAndPlay.WebAPI.Domain.Entities;
 using PlugAndPlay.WebAPI.Domain.Interfaces;
 
@@ -16,53 +15,21 @@ public class SchemaService : ISchemaService
     }
     public async Task<List<string>> RequestIsValid(RequestJson body)
     {
-        var errors = new List<string>();
-
-        try
+        var request = await _schemaRepository.GetRequestSchema(body.requestType, body.requestOrigin);
+        if (request == null)
         {
-            var request = await _schemaRepository.getRequestSchema(body.requestType, body.requestOrigin);
-            if (request == null)
-            {
-                return new List<string>() { $"request schema type {body.requestType} and origin {body.requestOrigin} not found" };
-            }
-        
-            var fields = await _schemaRepository.getFieldSchemas(request.Id);
-            if (fields.Count == 0)
-            {
-                return new List<string>() { $"fields schema not found for request Schema type {body.requestType} and origin {body.requestOrigin}" };
-            }
-        
-            errors = CheckRequiredFields(body, fields);
+            return new List<string>() { $"request schema type {body.requestType} and origin {body.requestOrigin} not found" };
         }
-        catch (Exception e)
+    
+        var fields = await _schemaRepository.GetFieldSchemas(request.Id);
+        if (fields.Count == 0)
         {
-            throw e;
+            return new List<string>() { $"fields schema not found for request Schema type {body.requestType} and origin {body.requestOrigin}" };
         }
 
-        return errors;
+        return CheckRequiredFields(body, fields);
     }
-
-    public async Task<Request> BuildRequest(JsonObject body)
-    {   
-        var type = body["requestType"]?.ToString();
-        var origin = body["requestOrigin"]?.ToString();
-
-        try
-        {
-            var requestSchema = await _schemaRepository.getRequestSchema(type, origin);
-            var fieldSchemas = await _schemaRepository.getFieldSchemas(requestSchema.Id);
-
-            var request = RequestBuilder.BuildRequest(requestSchema.Id, body);
-            request.Fields = RequestBuilder.BuildFields(fieldSchemas, body);
-
-            return request;
-        }
-        catch (Exception e)
-        {
-            throw e;
-        }
-    }
-
+    
     private List<string> CheckRequiredFields(RequestJson body, List<FieldSchema> fields)
     {
         var errors = new List<string>();
@@ -79,7 +46,7 @@ public class SchemaService : ISchemaService
             {
                 errors.Add($"field {field.Name} is required");
                 continue;
-            };
+            }
 
             var result = RequestHelper.FindExtraFields(fieldGroup, fieldName); 
             if (fieldGroup.records.Count > result.Count)
@@ -91,10 +58,25 @@ public class SchemaService : ISchemaService
         return errors;
     }
 
+    public async Task<Request> BuildRequest(RequestJson body)
+    {   
+        var requestSchema = await _schemaRepository.GetRequestSchema(body.requestType, body.requestOrigin);
+        var fieldSchemas = await _schemaRepository.GetFieldSchemas(requestSchema.Id);
+
+        var request = RequestBuilder.BuildRequest(requestSchema.Id, body);
+        request.Fields = RequestBuilder.BuildFields(fieldSchemas, body.fieldGroups);
+
+        return request;
+    }
+    
     public void UpsertRequest(Request request)
     {
         var requestId = _requestRepository.UpsertRequest(request);
-        request.Fields.ForEach(field => field.RequestId = requestId);
+        request.Fields.ForEach(field =>
+        { 
+            field.RequestId = requestId;
+            field.Children.ToList().ForEach(childField => childField.RequestId = requestId);
+        });
         _requestRepository.UpsertFields(request.Fields);
     }
 }

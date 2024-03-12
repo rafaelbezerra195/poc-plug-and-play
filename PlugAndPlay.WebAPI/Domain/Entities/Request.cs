@@ -3,7 +3,6 @@ namespace PlugAndPlay.WebAPI.Domain.Entities;
 public class Request
 {
     public int Id { get; set; }
-    public string Type { get; set; }
     public int RequestSchemaId { get; set; }
     public string Requester { get; set; }
     public string DocumentNumber { get; set; }

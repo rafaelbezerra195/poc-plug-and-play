@@ -6,7 +6,6 @@ CREATE TABLE [dbo].[BMA_REQUEST] (
     [Requester]       NVARCHAR (50)            NOT NULL,
     [DocumentNumber]       NVARCHAR (50)            NOT NULL,
     [Status]       NVARCHAR (20)            NULL,
-    [Currency]       NVARCHAR (10)            NULL,
     [InternalUniqueKey]         NVARCHAR (255)  NOT NULL,
     [CreateDate] DATETIME2 (7)  DEFAULT (getdate()) NOT NULL,
     [UpdateDate] DATETIME2 (7)  NULL,

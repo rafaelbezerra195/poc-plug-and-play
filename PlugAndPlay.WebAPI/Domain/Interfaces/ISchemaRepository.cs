@@ -4,7 +4,7 @@ namespace PlugAndPlay.WebAPI.Domain.Interfaces;
 
 public interface ISchemaRepository
 {
-    Task<List<FieldSchema>> getFieldSchemas(int requestId);
+    Task<List<FieldSchema>> GetFieldSchemas(int requestId);
 
-    Task<RequestSchema> getRequestSchema(string type, string origin);
+    Task<RequestSchema> GetRequestSchema(string type, string origin);
 }
