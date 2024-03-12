@@ -48,6 +48,7 @@ BEGIN TRANSACTION;
            (@request_schema_id, 'requestItems.field_002', @tab_schema_itens_id,  @type_string, 1, 'Description', 1, 1, GETDATE(), GETDATE()),
            (@request_schema_id, 'requestItems.field_003', @tab_schema_itens_id,  @type_string, 1, 'Quantity', 1, 1, GETDATE(), GETDATE()),
            (@request_schema_id, 'requestItems.field_004', @tab_schema_itens_id,  @type_string, 1, 'Unit', 1, 1, GETDATE(), GETDATE()),
+           (@request_schema_id, 'timeline.field_000', @tab_schema_timeline_id,  @type_complex, 0, 'Timeline', 1, 1, GETDATE(), GETDATE()),
            (@request_schema_id, 'timeline.field_001', @tab_schema_timeline_id,  @type_string, 1, 'Description', 1, 1, GETDATE(), GETDATE()),
            (@request_schema_id, 'timeline.field_002', @tab_schema_timeline_id,  @type_string, 1, 'User', 1, 1, GETDATE(), GETDATE()),
            (@request_schema_id, 'timeline.field_003', @tab_schema_timeline_id,  @type_string, 1, 'Create Date', 1, 1, GETDATE(), GETDATE()),
@@ -57,5 +58,10 @@ BEGIN TRANSACTION;
     SELECT @complex_items_field_schema = id from dbo.BMA_FIELD_SCHEMA where Name = 'requestItems.field_000'
 
     update dbo.BMA_FIELD_SCHEMA set Parent = @complex_items_field_schema where name in ('requestItems.field_001', 'requestItems.field_002', 'requestItems.field_003', 'requestItems.field_004')
+
+    DECLARE @complex_timeline_field_schema INT = 0;
+    SELECT @complex_timeline_field_schema = id from dbo.BMA_FIELD_SCHEMA where Name = 'timeline.field_000'
+
+    update dbo.BMA_FIELD_SCHEMA set Parent = @complex_timeline_field_schema where name in ('timeline.field_001', 'timeline.field_002', 'timeline.field_003', 'timeline.field_004')
 
 COMMIT TRANSACTION;
