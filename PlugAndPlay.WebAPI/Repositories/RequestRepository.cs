@@ -9,26 +9,48 @@ namespace PlugAndPlay.WebAPI.Repositories;
 public class RequestRepository: IRequestRepository
 {
     private readonly DbConnection _connection;
+    public List<FieldSchemaType> FieldSchemaType { get;} 
 
     public RequestRepository(DbContext context)
     {
         _connection = context.Database.GetDbConnection();
+        FieldSchemaType = GetFieldSchemaType();
     }
-    
+
+    private List<FieldSchemaType> GetFieldSchemaType()
+    {
+        const string sql = @"SELECT * from [PlugAndPlay].[dbo].[BMA_FIELD_SCHEMA_TYPES]";
+        return _connection.Query<FieldSchemaType>(sql).ToList();
+    }
+
     public int UpsertRequest(Request request)
     {
-        request.Id = GetRequest(request.RequestSchemaId, request.DocumentNumber);
+        request.Id = GetRequest(request.RequestSchemaId, request.DocumentNumber).Id;
         if (request.Id == 0) return InsertRequest(request);
         
         UpdateRequest(request);
         return request.Id;
     }
 
-    private int GetRequest(int requestSchemaId, string documentNumber)
+    public Request GetRequest(int requestSchemaId, string documentNumber)
     {
-        const string sql = @"SELECT Id from [PlugAndPlay].[dbo].[BMA_REQUEST] where RequestSchemaId = @RequestSchemaId and DocumentNumber = @DocumentNumber";
-        var result = _connection.Query<int>(sql, new {RequestSchemaId = requestSchemaId, DocumentNumber = documentNumber});
+        const string sql = @"SELECT * from [PlugAndPlay].[dbo].[BMA_REQUEST] where RequestSchemaId = @RequestSchemaId and DocumentNumber = @DocumentNumber";
+        var result = _connection.Query<Request>(sql, new {RequestSchemaId = requestSchemaId, DocumentNumber = documentNumber});
         return result.FirstOrDefault();
+    }
+    
+    public Request GetRequestById(int id)
+    {
+        const string sql = @"SELECT * from [PlugAndPlay].[dbo].[BMA_REQUEST] where Id = @Id";
+        var result = _connection.Query<Request>(sql, new {Id = id});
+        return result.FirstOrDefault();
+    }
+
+    public List<Field> GetFields(int requestId)
+    {
+        const string sql = @"SELECT * from [PlugAndPlay].[dbo].[BMA_FIELDS] where RequestId = @RequestId";
+        var result = _connection.Query<Field>(sql, new {RequestId = requestId});
+        return result.ToList();
     }
 
     private int InsertRequest(Request request)

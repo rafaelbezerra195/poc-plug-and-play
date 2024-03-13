@@ -12,4 +12,5 @@ public class RequestSchema
     public int ApprovalRuleId { get; set; }
     public DateTime CreateDate { get; set; } = DateTime.Now;
     public DateTime? UpdateDate { get; set; }
+    public List<TabSchema> Tabs { get; set; }
 }

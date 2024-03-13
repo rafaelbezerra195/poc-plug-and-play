@@ -15,8 +15,10 @@ builder.Services.AddDbContext<DbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("PlugAndPlayContext")));
 
 builder.Services.AddScoped<ISchemaService, SchemaService>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<ISchemaRepository, SchemaRepository>();
 builder.Services.AddScoped<IRequestRepository, RequestRepository>();
+builder.Services.AddScoped<IDocumentBuilder, DocumentBuilder>();
 
 var app = builder.Build();
 

@@ -31,4 +31,18 @@ public class SchemaRepository: ISchemaRepository
         var results = await _connection.QueryAsync<RequestSchema>(sql);
         return results.FirstOrDefault();
     }
+
+    public async Task<RequestSchema> GetRequestSchemaById(int id)
+    {
+        var sql = $"SELECT * FROM [PlugAndPlay].[dbo].[BMA_REQUEST_SCHEMA] WHERE Id = '{id}'";
+        var results = await _connection.QueryAsync<RequestSchema>(sql);
+        return results.FirstOrDefault();
+    }
+
+    public async Task<List<TabSchema>> GetTabSchemas(int requestSchemaId)
+    {
+        var sql = $"SELECT * FROM [PlugAndPlay].[dbo].[BMA_TAB_SCHEMA] WHERE RequestSchemaId = {requestSchemaId}";
+        var results = await _connection.QueryAsync<TabSchema>(sql);
+        return results.ToList();
+    }
 }
